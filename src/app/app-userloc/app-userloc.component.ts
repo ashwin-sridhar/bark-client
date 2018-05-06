@@ -1,7 +1,9 @@
 import { Component, OnInit,TemplateRef } from '@angular/core';
 import { MouseEvent as AGMMouseEvent } from '@agm/core';
 import {HelprequestService} from '../helprequest.service'
+import { HttpClient } from '@angular/common/http';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { Tickets } from '../tickets';
 
 @Component({
   selector: 'app-userloc',
@@ -16,15 +18,38 @@ export class AppUserlocComponent  {
   // initial center position for the map
   lat: number;
   lng: number;
+
+  private ticket:Tickets;
   
+
   public modalRef: BsModalRef;
-  constructor(private modalService: BsModalService) {}
+  constructor(private modalService: BsModalService,private httpObj:HttpClient) {}
   public openModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template); // {3}
   }
 
   clickedMarker(label: string, index: number) {
-    console.log(`clicked the marker: ${label || index}`)
+    console.log(`clicked the marker: ${label || index}`);
+    console.log("Hello HTTP");
+    this.httpObj.post("http://localhost:9000/createpost",{
+      "description":"Entry 3 not to be seen",
+	    "status":"open",
+	    "severity":"low",
+	    "location" : {
+        "type" : "Point",
+        "coordinates" : [ 
+          49.826613,
+          8.636391
+        ]
+      },
+	    "author":{"_id":"57d029f214188619304da626",
+			  "username":"ashwin",
+			  "email":"ashvin.sriram@gmail.com"
+	    },
+	    "responder":{}
+      }).subscribe((data:any)=>{
+      console.log("Successfully talked");
+    });
   }
 
   markers: marker[] = [];
@@ -63,7 +88,16 @@ export class AppUserlocComponent  {
         draggable: true
       });
     });
+
+    this.ticket=new Tickets({description:"",severity:""});
   }
+
+  public onFormSubmit({ value, valid}: { value: Tickets, valid: boolean }) {
+    this.ticket = value;
+    console.log( this.ticket);
+    console.log("valid: " + valid);
+    //Make the createpost HTTP call from here after 
+}
 }
 // just an interface for type safety.
 interface marker {

@@ -31,7 +31,7 @@
 </agm-map>
 <br>
 <!-- Trigger the modal with a button -->
-<button type="button" class="btn btn-primary btn-lg btn-block" (click)="openModal(template)">Open Modal</button>
+<button type="button" class="btn btn-primary btn-lg btn-block" (click)="openModal(template)">Ask help</button>
 
 <ng-template #template>
   <div class="modal-header">
@@ -42,6 +42,22 @@
   </button>
   </div>
   <div class="modal-body">
-      This is a modal.
+    <form #newTicketForm="ngForm" (ngSubmit)="onFormSubmit(newTicketForm)">
+      <div class="form-group">
+        <label for="descriptionText">Description</label>
+        <textarea ngModel class="form-control" id="descriptionText" name="descText" placeholder="Write your description here" required></textarea>
+        <small id="descHelp" class="form-text text-muted">Please include details that could be useful for the responder.</small>
+      </div>
+      <div class="form-group">
+        <label for="severity">Severity</label>
+        <select ngModel class="form-control" id="severity" name="severity" required>
+          <option>High</option>
+          <option>Medium</option>
+          <option>Low</option>
+        </select>
+      </div>
+      {{newTicketForm.value | json }}
+      <button [disabled]="!newTicketForm.form.valid" type="submit" class="btn btn-primary">Proceed</button>
+    </form>
   </div>
 </ng-template>
